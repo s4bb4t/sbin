@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
+var cnt int
 var keys []string
 var mu sync.Mutex
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.Method)
 	if r.Method == "POST" {
 		var key struct {
 			Key    string `json:"key"`
@@ -25,7 +25,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		key.ticker = time.NewTicker(30 * time.Second)
-
+		cnt++
 		go func() {
 			<-key.ticker.C
 			mu.Lock()
@@ -38,7 +38,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			}
 		}()
 
+		mu.Lock()
 		keys = append(keys, key.Key)
+		mu.Unlock()
+
 		w.WriteHeader(http.StatusOK)
 	} else {
 		data, err := json.Marshal(keys)
@@ -58,6 +61,14 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	fmt.Println("Server started")
+
+	go func() {
+		t := time.NewTicker(time.Minute)
+		for range t.C {
+			fmt.Println(cnt)
+		}
+	}()
+
 	http.Handle("/", http.FileServer(http.Dir("./static/")))
 	http.Handle("/healthCheck", http.HandlerFunc(healthCheck))
 	http.Handle("/api/", withCORS(http.HandlerFunc(handler)))
