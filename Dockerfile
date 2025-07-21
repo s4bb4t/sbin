@@ -17,6 +17,7 @@ FROM alpine:3.18.3
 WORKDIR /
 
 COPY --from=builder /app/app /app
+COPY --from=builder /app/static /app/static
 
 EXPOSE 8011
 
