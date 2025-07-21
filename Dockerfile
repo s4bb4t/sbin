@@ -1,5 +1,5 @@
 # Стадия сборки
-FROM golang:1.21-alpine as builder
+FROM golang:1.24.4-alpine as builder
 
 WORKDIR /app
 
