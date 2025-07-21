@@ -24,7 +24,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		key.ticker = time.NewTicker(1 * time.Minute)
+		key.ticker = time.NewTicker(30 * time.Second)
 
 		go func() {
 			<-key.ticker.C
