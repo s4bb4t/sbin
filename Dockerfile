@@ -4,6 +4,7 @@ FROM golang:1.24.4-alpine as builder
 WORKDIR /app
 
 COPY go.mod ./
+COPY static ./static
 RUN go mod download
 
 COPY . .

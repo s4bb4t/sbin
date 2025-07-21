@@ -51,21 +51,25 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func healthCheck(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("ok")
+	fmt.Fprint(w, http.StatusText(http.StatusOK))
+}
+
 func main() {
 	fmt.Println("Server started")
 	http.Handle("/", http.FileServer(http.Dir("./static/")))
+	http.Handle("/healthCheck", http.HandlerFunc(healthCheck))
 	http.Handle("/api/", withCORS(http.HandlerFunc(handler)))
 	fmt.Println(http.ListenAndServe(":8011", nil))
 }
 
 func withCORS(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Разрешаем все источники (можно ограничить origin при необходимости)
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 
-		// Обрабатываем preflight
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
 			return
