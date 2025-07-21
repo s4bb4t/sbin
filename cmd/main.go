@@ -25,7 +25,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		key.ticker = time.NewTicker(30 * time.Second)
-		cnt++
 		go func() {
 			<-key.ticker.C
 			mu.Lock()
@@ -39,6 +38,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}()
 
 		mu.Lock()
+		cnt++
 		keys = append(keys, key.Key)
 		mu.Unlock()
 
