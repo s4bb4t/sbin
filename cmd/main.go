@@ -52,6 +52,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	fmt.Println("Server started")
 	http.Handle("/", http.FileServer(http.Dir("./static/")))
 	http.Handle("/api/", withCORS(http.HandlerFunc(handler)))
 	fmt.Println(http.ListenAndServe(":8011", nil))
