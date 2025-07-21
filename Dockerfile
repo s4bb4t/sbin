@@ -1,9 +1,22 @@
+# Стадия сборки
+FROM golang:1.21-alpine as builder
+
+WORKDIR /app
+
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN go build -o app ./cmd/main.go
+
+# Финальный минимальный образ
 FROM alpine:3.18.3
 
 WORKDIR /
 
-CMD go build -o bin/app cmd/main.go
-COPY bin/app /
+COPY --from=builder /app/app /app
 
 EXPOSE 8011
 
